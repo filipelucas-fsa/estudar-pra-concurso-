@@ -1,0 +1,71 @@
+PROVA INTERATIVA — do PDF ao simulado (versão React)
+=====================================
+
+Como usar (agora é um projeto React + Vite; precisa de Node.js 18+):
+
+1. Na pasta do projeto, rode uma vez:
+       npm install
+2. Para desenvolvimento:
+       npm run dev
+   e abra o endereço mostrado no terminal (ex.: http://localhost:5173).
+3. No quadro "01 Prova", solte (ou selecione) o PDF do caderno de questões.
+4. No quadro "02 Gabarito", solte o PDF do gabarito oficial — ou, se preferir,
+   abra "ou colar o gabarito como texto" e cole no formato:
+       1-C
+       2-A
+       3-B
+       ...
+5. Clique em "Processar prova". As questões extraídas aparecem em um JSON
+   editável — revise e corrija manualmente qualquer questão que o parser
+   tenha identificado errado (é raro precisar mexer em muita coisa).
+6. Clique em "Iniciar prova" e responda. O feedback (certo/errado + resposta
+   correta) aparece assim que você marca uma alternativa.
+7. No fim, veja a nota e a lista das questões erradas.
+
+Para gerar uma versão estática pronta para publicar (pasta dist/):
+       npm run build
+e para testá-la localmente:
+       npm run preview
+
+Requisitos:
+- Node.js 18 ou superior (para rodar o projeto).
+- Um navegador atual (Chrome, Edge, Firefox ou Safari).
+- Conexão com a internet na primeira abertura (o app carrega a biblioteca
+  de leitura de PDF e as fontes a partir de um CDN público).
+
+Nada é enviado para nenhum servidor: a leitura do PDF e a correção
+acontecem inteiramente no seu navegador.
+
+Estrutura do projeto:
+- index.html ................ entrada do Vite (fontes + pdf.js via CDN)
+- src/main.jsx .............. bootstrap do React
+- src/App.jsx ............... máquina de estados das etapas (upload →
+                              revisão → prova → resultado), sessão salva,
+                              cronômetro e atalhos de teclado
+- src/styles.css ............ o mesmo CSS do app original
+- src/lib/parser.js ......... parsing de questões e gabarito (idêntico)
+- src/lib/pdfUtils.js ...... extração de texto do PDF + OCR (idêntico)
+- src/lib/session.js ........ persistência da sessão em andamento
+- src/components/ ........... Dropzone, UploadStage, ReviewStage,
+                              QuizStage e ResultsStage (mesma UI)
+
+Novidades desta versão
+-----------------------
+- Cabeçalho e rodapé repetidos em cada página (nome do concurso, site,
+  numeração) agora são detectados e removidos automaticamente antes de
+  separar as questões — o parser fica mais limpo sem precisar de ajuste.
+- Reconhece mais formatos de numeração: "1.", "1)", "1 -", "QUESTÃO 1",
+  "1ª)", etc.
+- O gabarito é lido tanto em formato de lista ("1-C") quanto de tabela/
+  grade (como sai de PDFs com aquelas grades de bolinhas/letras).
+- Se o PDF for escaneado (imagem, sem camada de texto), o app avisa e
+  oferece um botão de OCR (mais lento, mas funciona offline de rede
+  depois de carregado).
+- Questões com formato estranho (poucas alternativas, enunciado muito
+  curto) são sinalizadas na tela de revisão, pra você conferir mais rápido.
+- O progresso é salvo automaticamente (localStorage) — se fechar a aba no
+  meio da prova, ao reabrir aparece um botão "Continuar".
+- Modo cronometrado opcional: defina o tempo da prova antes de começar e
+  um cronômetro aparece durante o simulado, com corte automático no fim.
+- Atalhos de teclado: setas ← → navegam entre questões, letras A–E (ou
+  números 1–5) marcam a resposta.
